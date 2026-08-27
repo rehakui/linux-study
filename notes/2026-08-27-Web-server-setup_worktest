@@ -1,0 +1,258 @@
+Webサーバー構築 30分振り返り教材
+
+AlmaLinux・追加HDD・Apache・パラメータシート
+
+30分の使い方
+
+時間
+
+見る内容
+
+ゴール
+
+0〜10分
+
+構築の流れ
+
+何をどの順番で行ったか説明できる
+
+10〜20分
+
+主要コマンド
+
+各コマンドの目的を思い出せる
+
+20〜25分
+
+設定値
+
+パラメータシートの値を確認できる
+
+25〜30分
+
+確認問題
+
+曖昧な点だけ研修テキストへ戻れる
+
+今日の到達点：AlmaLinux上にApache Webサーバーを構築し、Windowsのブラウザからテストページを表示した。追加HDDの設定から提出用パラメータシートの完成まで、一連の作業を実施した。
+
+1. 今日行ったこと
+
+環境確認
+
+AlmaLinux仮想マシンを起動
+
+CPU 2個、メモリ2048MB、sda 20GBを確認
+
+enp0s8のIPアドレスを確認
+
+追加HDDのパーティション作成
+
+追加したsdb（8GB）をlsblkで確認
+
+fdiskでsdb1を作成
+
+ファイルシステムとマウント
+
+sdb1をXFSでフォーマット
+
+/dataを作成してマウント
+
+自動マウント設定
+
+blkidでUUIDを取得
+
+/etc/fstabへ登録
+
+mount -aとfindmntで確認
+
+Apacheの導入
+
+yumでhttpdをインストール
+
+Apacheの起動と自動起動を設定
+
+ファイアウォールでHTTPを許可
+
+テストページ作成
+
+/var/www/html/index.htmlを作成
+
+curlとWindowsのブラウザで表示確認
+
+Apacheの設定変更
+
+/etc/httpd/conf/httpd.confを編集
+
+ServerName webserver.example.comを設定
+
+文法確認後、Apacheを再起動
+
+ユーザーと提出資料
+
+root、Alice、Bob、Charlieを確認
+
+HDD、OS、ユーザー、ネットワーク、Apache、構成図をPowerPointへ記載
+
+接続の流れ
+
+Windowsブラウザ → 192.168.56.116 → AlmaLinux → Apache → /var/www/html/index.html
+
+2. 主要コマンド早見表
+
+コマンド
+
+目的
+
+lsblk
+
+ディスクとパーティションを確認
+
+fdisk /dev/sdb
+
+追加HDDにパーティションを作成
+
+mkfs.xfs /dev/sdb1
+
+sdb1をXFSでフォーマット
+
+mount /dev/sdb1 /data
+
+sdb1を/dataへマウント
+
+blkid /dev/sdb1
+
+UUIDを確認
+
+mount -a
+
+/etc/fstabの設定でマウント
+
+findmnt /data
+
+/dataのマウント状態を確認
+
+yum install -y httpd
+
+Apacheを依存関係込みで導入
+
+systemctl start httpd
+
+Apacheを起動
+
+systemctl enable httpd
+
+Apacheの自動起動を有効化
+
+firewall-cmd --permanent --add-service=http
+
+HTTP通信を恒久的に許可
+
+firewall-cmd --reload
+
+ファイアウォール設定を反映
+
+curl http://localhost
+
+サーバー内部からページを確認
+
+apachectl configtest
+
+Apache設定の文法を確認
+
+systemctl restart httpd
+
+Apacheの変更を反映
+
+/etc/fstabへ追加した設定
+
+UUID=8acd205b-351b-4c56-bcde-3c7d8801a81b /data xfs defaults 0 0
+
+UUIDでsdb1を指定し、起動時にXFSとして/dataへ自動マウントする設定。
+
+3. パラメータシートで整理した値
+
+項目
+
+設定値
+
+OS
+
+AlmaLinux 10.0（Purple Lion）
+
+言語・タイムゾーン
+
+日本語・Asia/Tokyo
+
+ホスト名
+
+webserver
+
+CPU・メモリ
+
+2個・2048MB
+
+sda
+
+20GB（/boot 1GB、/ 17GB）
+
+sdb
+
+8GB、VDI、可変サイズ、XFS、/data
+
+一般ユーザー
+
+Alice、Bob、Charlie
+
+インターフェース
+
+lo、enp0s8
+
+IPアドレス
+
+192.168.56.116/24
+
+Apache
+
+httpd 2.4.63-13.el10_2.6
+
+ServerName
+
+webserver.example.com
+
+4. 5分確認問題
+
+sdb1をXFSにしたコマンドは何だったか？
+
+/dataを再起動後も自動マウントする設定ファイルはどれか？
+
+yumとrpmは、今回どのように使い分けたか？
+
+Apacheの公開ディレクトリと設定ファイルはどこか？
+
+Windowsから接続するため、Apache以外に何を設定したか？
+
+<details>
+<summary>答え合わせ</summary>
+
+mkfs.xfs /dev/sdb1
+
+/etc/fstab
+
+yumは依存関係を解決して導入、rpm -qは導入済み情報の確認
+
+/var/www/htmlと/etc/httpd/conf/httpd.conf
+
+firewalldでHTTPを許可し、enp0s8のIPアドレスへ接続
+
+</details>
+
+振り返り終了チェック
+
+8工程を自分の言葉で説明できた
+
+主要コマンドの目的を思い出せた
+
+曖昧な項目を研修テキストで確認した
+
+
